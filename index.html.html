@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dział 1 — Liczby rzeczywiste</title>
+<style>
+:root{--ink:#172554;--blue:#2563eb;--muted:#64748b;--line:#dbe2ea;--bg:#f8fafc}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:#172033;font:16px/1.55 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+main{max-width:950px;margin:auto;padding:22px}
+.hero{background:linear-gradient(135deg,#172554,#1d4ed8);color:white;padding:28px;border-radius:20px;margin-bottom:20px}
+.hero .eyebrow{font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;color:#bfdbfe;font-weight:700}
+h1{margin:.3em 0;font-size:clamp(1.8rem,5vw,2.7rem);line-height:1.15}
+.hero p{color:#dbeafe;margin:.5em 0 1em}
+.pills{display:flex;flex-wrap:wrap;gap:8px}.pill{background:#ffffff20;border:1px solid #ffffff35;border-radius:999px;padding:5px 10px;font-size:.85rem}
+h2{font-size:1.25rem;margin:0 0 12px}
+.topics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:20px}
+.topic-btn{display:flex;align-items:center;gap:12px;text-align:left;border:1px solid var(--line);background:white;padding:13px;border-radius:14px;cursor:pointer;color:inherit;min-height:70px}
+.topic-btn.active{border:2px solid var(--blue);background:#eff6ff;padding:12px}
+.num{display:grid;place-items:center;flex:0 0 38px;height:38px;border-radius:10px;font-weight:800;color:#1f2937}
+.topic-name{font-weight:650;font-size:.94rem}.topic-count{color:var(--muted);font-size:.8rem}
+.section-head{display:flex;align-items:center;gap:12px;margin:20px 0 12px}
+.section-head .num{width:42px;height:42px}
+.task{background:white;border:1px solid var(--line);border-radius:16px;padding:18px;margin:12px 0;box-shadow:0 2px 6px #0f172a08}
+.task-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.badge{font-size:.78rem;background:#eef2ff;color:#3730a3;border-radius:999px;padding:4px 9px;font-weight:700}
+.problem{font-size:1.03rem;white-space:pre-line}
+.solution{display:none;background:#f1f5f9;border-left:4px solid #16a34a;border-radius:8px;padding:13px 15px;margin-top:14px}
+.solution.show{display:block}
+button.reveal{margin-top:14px;border:0;border-radius:10px;background:var(--blue);color:white;font:inherit;font-weight:650;padding:10px 14px;cursor:pointer}
+button.reveal:hover{background:#1d4ed8}
+.controls{display:flex;gap:10px;margin:18px 0}
+.controls button,.show-all{border:1px solid var(--line);border-radius:10px;padding:10px 14px;background:white;font:inherit;cursor:pointer}
+.controls button:disabled{opacity:.4;cursor:default}
+.show-all{margin:0 0 18px}
+footer{color:var(--muted);font-size:.86rem;margin:24px 0 8px}
+@media(max-width:560px){main{padding:13px}.topics{grid-template-columns:1fr}.hero{padding:22px}.task{padding:15px}}
+@media print{body{background:white}.topics,.controls,.reveal,.show-all{display:none!important}.task{break-inside:avoid;box-shadow:none}.solution{display:block!important}}
+</style>
+</head>
+<body>
+<main>
+<header class="hero">
+<div class="eyebrow">Matematyka • klasa 1 technikum</div>
+<h1>Dział 1. Liczby rzeczywiste</h1>
+<p>Poziom rozszerzony · 27 zadań · 9 tematów</p>
+<div class="pills"><span class="pill">Potęgi i pierwiastki</span><span class="pill">Logarytmy</span><span class="pill">Procenty</span></div>
+</header>
+<h2>Wybierz temat</h2>
+<div id="topics" class="topics"></div>
+<button class="show-all" id="toggleAll">Pokaż wszystkie rozwiązania</button>
+<div id="content"></div>
+<div class="controls"><button id="prev">← Poprzedni temat</button><button id="next">Następny temat →</button></div>
+<footer>Wskazówka: kliknij „Pokaż rozwiązanie”, aby odsłonić wyjaśnienie. Plik działa lokalnie w przeglądarce i nie wymaga internetu.</footer>
+</main>
+<script>
+const topics = [
+{name:"Liczby naturalne i pierwsze",color:"#DBEAFE",tasks:[
+["Rozłóż 420 i 756 na czynniki pierwsze. Oblicz NWD i NWW.","420 = 2² · 3 · 5 · 7; 756 = 2² · 3³ · 7. NWD = 84, NWW = 3780."],
+["Znajdź liczby pierwsze n, dla których n dzieli n + 12.","Jeśli n dzieli n + 12, to dzieli też 12. Pierwsze dzielniki 12 to 2 i 3."],
+["Dla których dzielników 30 liczba 2n + 1 jest pierwsza?","Dzielniki 30: 1, 2, 3, 5, 6, 10, 15, 30. Wartości 2n+1 to 3, 5, 7, 11, 13, 21, 31, 61. Odpowiedź: n = 1, 2, 3, 5, 10, 15, 30."]
+]},
+{name:"Ułamki i liczby całkowite",color:"#E0E7FF",tasks:[
+["Oblicz: 3/4 − (5/6 − 7/9) · 18/5","5/6 − 7/9 = 1/18. Dalej: 3/4 − 1/5 = 11/20."],
+["Oblicz: (−3/2)² − (5/6 : 10/9) + (−7/3) · 3/14","9/4 − 3/4 − 1/2 = 1."],
+["Rozwiąż: (2x − 1)/3 − (x + 2)/4 = 5/6","Mnożymy przez 12: 8x − 4 − 3x − 6 = 10, więc 5x = 20, x = 4."]
+]},
+{name:"Liczby wymierne i niewymierne",color:"#F3E8FF",tasks:[
+["Określ rodzaj liczb: √49, √18, 0,1(6), √12/√3, π − 3.","Wymierne: 7, 0,1(6) = 1/6, √12/√3 = 2. Niewymierne: √18 i π − 3."],
+["Uporządkuj rosnąco: √10, 10/3, √11, 3,2.","√10 ≈ 3,1623; √11 ≈ 3,3166; 10/3 ≈ 3,3333. Odpowiedź: √10 < 3,2 < √11 < 10/3."],
+["Wyznacz całkowite x: −3 < (2x − 1)/3 ≤ 5.","Mnożymy przez 3: −9 < 2x − 1 ≤ 15. Stąd −4 < x ≤ 8, czyli x = −3, −2, …, 8."]
+]},
+{name:"Rozwinięcia dziesiętne",color:"#CCFBF1",tasks:[
+["Zamień 0,2(35) na ułamek zwykły.","Niech x = 0,2353535… Wtedy 1000x = 235,3535… i 10x = 2,3535…; po odjęciu 990x = 233, więc x = 233/990."],
+["Oblicz: 0,1(27) / 0,3(6)","0,1(27) = 126/990 = 7/55; 0,3(6) = 11/30. Iloraz: 7/55 · 30/11 = 42/121."],
+["Dla jakich cyfr a zachodzi 2/5 < 0,4a(2) < 1/2?","Liczba 0,4a(2) oznacza 0,4a222… Dla każdej cyfry a od 0 do 9 liczba jest większa od 0,4 i mniejsza od 0,5. Odpowiedź: wszystkie cyfry 0–9."]
+]},
+{name:"Pierwiastki",color:"#FEF3C7",tasks:[
+["Uprość: 2√75 − 3√12 + √27","√75 = 5√3, √12 = 2√3, √27 = 3√3. Wynik: 10√3 − 6√3 + 3√3 = 7√3."],
+["Oblicz: ∛(−64) + ⁴√81 − ⁵√32","−4 + 3 − 2 = −3."],
+["Usuń niewymierność z mianownika: 6/(√5 − √2)","Pomnóż licznik i mianownik przez √5 + √2. Otrzymasz 6(√5 + √2)/(5−2) = 2(√5 + √2)."]
+]},
+{name:"Potęgi",color:"#FFEDD5",tasks:[
+["Uprość: (2⁵ · 4⁻²) / 8⁻¹","4⁻² = 2⁻⁴, 8⁻¹ = 2⁻³. Zatem 2⁵ · 2⁻⁴ / 2⁻³ = 2⁴ = 16."],
+["Oblicz: 16^(3/4) − 27^(2/3) + 32^(2/5)","16^(3/4) = 8, 27^(2/3) = 9, 32^(2/5) = 4. Wynik: 8 − 9 + 4 = 3."],
+["Uprość dla a > 0 i b > 0: (a^(3/2) · b^(−2)) / (a^(−1/2) · b^(−4))","Przy dzieleniu potęg o tych samych podstawach odejmujemy wykładniki: a^(3/2−(−1/2)) · b^(−2−(−4)) = a²b²."]
+]},
+{name:"Notacja wykładnicza",color:"#D1FAE5",tasks:[
+["Oblicz: (3 · 10⁵)(4 · 10⁻³)/(6 · 10²)","Współczynniki: 12/6 = 2. Wykładnik: 5 − 3 − 2 = 0. Wynik: 2 · 10⁰ = 2."],
+["Masa cząsteczki wynosi 3,2 · 10⁻²² g. Oblicz masę 5 · 10¹⁸ cząsteczek.","3,2 · 5 = 16; 10⁻²² · 10¹⁸ = 10⁻⁴. Wynik: 16 · 10⁻⁴ = 1,6 · 10⁻³ g."],
+["Uporządkuj rosnąco: 4,5 · 10⁻³; 7,2 · 10⁻⁴; 3,9 · 10⁻²; 8,1 · 10⁻³","Odpowiedź: 7,2 · 10⁻⁴ < 4,5 · 10⁻³ < 8,1 · 10⁻³ < 3,9 · 10⁻²."]
+]},
+{name:"Logarytmy",color:"#FCE7F3",tasks:[
+["Oblicz: log₂32 + log₃(1/27) − log₅25","log₂32 = 5, log₃(1/27) = −3, log₅25 = 2. Wynik: 5 − 3 − 2 = 0."],
+["Rozwiąż: log₂(x − 1) = 3","Dziedzina: x > 1. Z definicji logarytmu x − 1 = 2³ = 8, więc x = 9."],
+["Uprość: log₂12 + log₂6 − log₂9","Łączymy logarytmy: log₂(12 · 6 / 9) = log₂8 = 3."]
+]},
+{name:"Procenty",color:"#FEE2E2",tasks:[
+["Cena wzrosła o 20%, potem spadła o 20%. Cena końcowa to 192 zł. Oblicz cenę początkową.","Niech cena początkowa to x. 1,2 · 0,8x = 192, czyli 0,96x = 192. Zatem x = 200 zł. Cena nie wróciła do wartości początkowej."],
+["Dziewczęta stanowią 40% klasy. Po przyjściu 3 dziewcząt stanowią 50% klasy. Ilu uczniów było początkowo?","Niech liczba uczniów to x. 0,4x + 3 = 0,5(x + 3). Stąd 0,4x + 3 = 0,5x + 1,5, więc x = 15."],
+["Po obniżkach 15% i 10% towar kosztuje 306 zł. Oblicz cenę początkową i łączną obniżkę.","0,85 · 0,9x = 306, czyli 0,765x = 306. Cena początkowa x = 400 zł. Obniżka: 94/400 · 100% = 23,5%."]
+]}
+];
+let selected = 0;
+let allShown = false;
+const topicsEl = document.getElementById('topics');
+const contentEl = document.getElementById('content');
+function renderTopics(){
+ topicsEl.innerHTML='';
+ topics.forEach((t,i)=>{
+  const b=document.createElement('button');
+  b.className='topic-btn'+(i===selected?' active':'');
+  b.innerHTML=`<span class="num" style="background:${t.color}">${i+1}</span><span><span class="topic-name">${t.name}</span><br><span class="topic-count">3 zadania</span></span>`;
+  b.addEventListener('click',()=>{selected=i;render()});
+  topicsEl.appendChild(b);
+ });
+}
+function renderContent(){
+ const t=topics[selected];
+ contentEl.innerHTML=`<div class="section-head"><span class="num" style="background:${t.color}">${selected+1}</span><div><h2>${t.name}</h2><div class="topic-count">3 zadania · poziom rozszerzony</div></div></div>`;
+ t.tasks.forEach((task,j)=>{
+  const card=document.createElement('article');
+  card.className='task';
+  const top=document.createElement('div');top.className='task-top';
+  top.innerHTML=`<span class="badge">Zadanie ${j+1}</span><span aria-hidden="true">✏️</span>`;
+  const problem=document.createElement('div');problem.className='problem';problem.textContent=task[0];
+  const btn=document.createElement('button');btn.className='reveal';btn.textContent=allShown?'Ukryj rozwiązanie':'Pokaż rozwiązanie';
+  const solution=document.createElement('div');solution.className='solution'+(allShown?' show':'');
+  const strong=document.createElement('strong');strong.textContent='Wyjaśnienie';
+  const text=document.createElement('div');text.textContent=task[1];text.style.marginTop='5px';
+  solution.append(strong,text);
+  btn.addEventListener('click',()=>{solution.classList.toggle('show');btn.textContent=solution.classList.contains('show')?'Ukryj rozwiązanie':'Pokaż rozwiązanie'});
+  card.append(top,problem,btn,solution);contentEl.appendChild(card);
+ });
+}
+function render(){renderTopics();renderContent();document.getElementById('prev').disabled=selected===0;document.getElementById('next').disabled=selected===topics.length-1;document.getElementById('toggleAll').textContent=allShown?'Ukryj wszystkie rozwiązania':'Pokaż wszystkie rozwiązania'}
+document.getElementById('prev').addEventListener('click',()=>{if(selected>0){selected--;render()}});
+document.getElementById('next').addEventListener('click',()=>{if(selected<topics.length-1){selected++;render()}});
+document.getElementById('toggleAll').addEventListener('click',()=>{allShown=!allShown;render()});
+render();
+</script>
+</body>
+</html>
